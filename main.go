@@ -66,7 +66,7 @@ func main() {
 
 		select {
 		case signal := <-sigCh:
-			log.Infof("Received signal %v, terminating cleanly", signal)
+			log.Infof("Received %s signal, terminating cleanly", signal)
 			doneCh <- struct{}{}
 			return
 		case <-lockLost:
@@ -118,9 +118,10 @@ func mainLoop(consulClient *consul.Client, statsdClient *dogstatsd.Client, inter
 				for checkStatus, count := range countByStatus {
 					datadogTags := []string{
 						"status:" + checkStatus,
+						"service:" + serviceName,
 						tag,
 					}
-					statsdClient.Gauge("service."+serviceName, float64(count), datadogTags, 1)
+					statsdClient.Gauge("service.count", float64(count), datadogTags, 1)
 				}
 			}
 		}
