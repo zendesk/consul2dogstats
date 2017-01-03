@@ -7,6 +7,10 @@ metadata:
     role: app
 spec:
   replicas: 2
+  selector:
+    matchLabels:
+      project: consul2dogstats
+      role: app
   template:
     metadata:
       labels:
