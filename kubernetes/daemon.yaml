@@ -1,0 +1,23 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: consul2dogstats
+  labels:
+    tier: monitoring
+    app: consul2dogstats
+    version: v1
+spec:
+  replicas: 2
+  template:
+    metadata:
+      labels:
+        app: consul2dogstats
+    spec:
+      containers:
+      - name: consul2dogstats
+        image: consul2dogstats
+        env:
+        - name: STATSD_ADDR
+          value: 169.254.1.1:8125
+        - name: CONSUL_HTTP_ADDR
+          value: http://169.254.1.1:8500
