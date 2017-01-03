@@ -3,15 +3,15 @@ kind: Deployment
 metadata:
   name: consul2dogstats
   labels:
-    tier: monitoring
-    app: consul2dogstats
-    version: v1
+    project: consul2dogstats
+    role: app
 spec:
   replicas: 2
   template:
     metadata:
       labels:
-        app: consul2dogstats
+        project: consul2dogstats
+        role: app
     spec:
       containers:
       - name: consul2dogstats
