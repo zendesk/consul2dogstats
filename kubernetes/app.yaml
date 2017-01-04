@@ -21,7 +21,7 @@ spec:
       - name: consul2dogstats
         image: docker-registry.zende.sk/consul2dogstats:latest
         env:
-        - name: STATSD_ADDR
+        - name: DOGSTATSD_ADDR
           value: 169.254.1.1:8125
         - name: CONSUL_HTTP_ADDR
           value: 169.254.1.1:8500
