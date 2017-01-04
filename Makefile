@@ -1,9 +1,18 @@
-.DEFAULT: all
-.PHONY: all clean
+.DEFAULT: push
+.PHONY: all clean image push bin
 
-all: consul2dogstats
+DOCKER_IMAGE := docker-registry.zende.sk/consul2dogstats
+DOCKER_TAG := latest
 
-consul2dogstats: main.go
+push: image
+	docker push $(DOCKER_IMAGE):$(DOCKER_TAG)
+
+image: bin
+	docker build -t $(DOCKER_IMAGE):$(DOCKER_TAG) -f Dkrfile .
+
+bin: bin/consul2dogstats
+
+bin/consul2dogstats: main.go
 	go build -o bin/consul2dogstats main.go
 
 clean:
