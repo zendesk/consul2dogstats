@@ -10,10 +10,13 @@ import (
 
 	log "github.com/Sirupsen/logrus"
 	consul "github.com/hashicorp/consul/api"
+	"github.com/zendesk/consul2dogstats/version"
 	"github.com/zorkian/go-datadog-api"
 )
 
 func main() {
+	log.Infof("Starting %s version git-%s", os.Args[0], version.GitRevision)
+
 	datadogAPIKey := os.Getenv("DATADOG_API_KEY")
 	if datadogAPIKey == "" {
 		log.Fatal("DATADOG_API_KEY environment variable must be set")
