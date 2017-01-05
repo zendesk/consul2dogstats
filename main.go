@@ -10,14 +10,23 @@ import (
 
 	log "github.com/Sirupsen/logrus"
 	consul "github.com/hashicorp/consul/api"
-	"github.com/ooyala/go-dogstatsd"
+	"github.com/zorkian/go-datadog-api"
 )
 
 func main() {
-	dogstatsdAddr := os.Getenv("DOGSTATSD_ADDR")
-	if dogstatsdAddr == "" {
-		dogstatsdAddr = "127.0.0.1:8125"
+	datadogAPIKey := os.Getenv("DATADOG_API_KEY")
+	if datadogAPIKey == "" {
+		log.Fatal("DATADOG_API_KEY environment variable must be set")
 	}
+
+	datadogClient := datadog.NewClient(datadogAPIKey, "")
+	if ok, err := datadogClient.Validate(); !ok || err != nil {
+		if !ok {
+			log.Fatal("Invalid Datadog API key")
+		}
+		log.Fatal(err)
+	}
+
 	consulLockKeypath := os.Getenv("C2D_LOCK_PATH")
 	if consulLockKeypath == "" {
 		consulLockKeypath = "consul2dogstats/.lock"
@@ -41,13 +50,6 @@ func main() {
 		log.Fatal(err)
 	}
 
-	statsdClient, err := dogstatsd.New(dogstatsdAddr)
-	defer statsdClient.Close()
-	if err != nil {
-		log.Fatal(err)
-	}
-	statsdClient.Namespace = "consul."
-
 	sigCh := make(chan os.Signal)
 	doneCh := make(chan struct{})
 
@@ -60,7 +62,7 @@ func main() {
 		defer lock.Unlock()
 		log.Info("Lock acquired")
 
-		go mainLoop(consulClient, statsdClient, collectInterval, doneCh)
+		go mainLoop(consulClient, datadogClient, collectInterval, doneCh)
 
 		signal.Notify(sigCh, os.Interrupt, syscall.SIGINT, syscall.SIGTERM, syscall.SIGQUIT)
 
@@ -79,7 +81,7 @@ func main() {
 	}
 }
 
-func mainLoop(consulClient *consul.Client, statsdClient *dogstatsd.Client, interval time.Duration, doneCh <-chan struct{}) {
+func mainLoop(consulClient *consul.Client, datadogClient *datadog.Client, interval time.Duration, doneCh <-chan struct{}) {
 	health := consulClient.Health()
 	catalog := consulClient.Catalog()
 	queryOptions := consul.QueryOptions{}
@@ -87,15 +89,19 @@ func mainLoop(consulClient *consul.Client, statsdClient *dogstatsd.Client, inter
 	ticker := time.NewTicker(interval)
 	for {
 		select {
-		case <-ticker.C:
-			// wait for next tick, then leave select loop
 		case <-doneCh:
 			return
+		case <-ticker.C:
+			// wait for next tick, then leave select loop
 		}
+
 		services, _, err := catalog.Services(&queryOptions)
 		if err != nil {
 			log.Fatal(err)
 		}
+
+		var metrics []datadog.Metric
+
 		for serviceName := range services {
 			serviceHealth, _, err := health.Service(serviceName, "", false, &queryOptions)
 			if err != nil {
@@ -116,14 +122,26 @@ func mainLoop(consulClient *consul.Client, statsdClient *dogstatsd.Client, inter
 			}
 			for tag, countByStatus := range countByTagAndStatus {
 				for checkStatus, count := range countByStatus {
-					datadogTags := []string{
-						"status:" + checkStatus,
-						"service:" + serviceName,
-						tag,
+					metric := datadog.Metric{
+						Metric: "consul.service.count",
+						Points: []datadog.DataPoint{
+							{
+								float64(time.Now().Unix()),
+								float64(count),
+							},
+						},
+						Tags: []string{
+							"status:" + checkStatus,
+							"service:" + serviceName,
+							tag,
+						},
 					}
-					statsdClient.Gauge("service.count", float64(count), datadogTags, 1)
+					metrics = append(metrics, metric)
 				}
 			}
+		}
+		if err := datadogClient.PostMetrics(metrics); err != nil {
+			log.Fatal(err)
 		}
 	}
 }
