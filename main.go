@@ -24,10 +24,11 @@ func main() {
 
 	datadogClient := datadog.NewClient(datadogAPIKey, "")
 	if ok, err := datadogClient.Validate(); !ok || err != nil {
-		if !ok {
+		if err == nil {
 			log.Fatal("Invalid Datadog API key")
+		} else {
+			log.Fatal(err)
 		}
-		log.Fatal(err)
 	}
 
 	consulLockKeypath := os.Getenv("C2D_LOCK_PATH")

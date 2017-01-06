@@ -21,4 +21,4 @@ bin/consul2dogstats: main.go version/version.go
 		main.go
 
 clean:
-	-rm -f bin/*
+	-rm -f bin/consul2dogstats

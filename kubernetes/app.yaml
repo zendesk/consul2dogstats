@@ -28,3 +28,10 @@ spec:
             secretKeyRef:
               name: datadog
               key: token
+        volumeMounts:
+        - mountPath: /etc/ssl/certs
+          name: sslcerts
+      volumes:
+      - name: sslcerts
+        hostPath:
+          path: /etc/ssl/certs
