@@ -21,7 +21,10 @@ spec:
       - name: consul2dogstats
         image: docker-registry.zende.sk/consul2dogstats:latest
         env:
-        - name: DOGSTATSD_ADDR
-          value: 169.254.1.1:8125
         - name: CONSUL_HTTP_ADDR
           value: 169.254.1.1:8500
+        - name: DATADOG_API_KEY
+          valueFrom:
+            secretKeyRef:
+              name: datadog
+              key: token
