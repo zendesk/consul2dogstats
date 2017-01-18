@@ -88,7 +88,14 @@ func main() {
 func mainLoop(consulClient *consul.Client, datadogClient *datadog.Client, interval time.Duration, doneCh <-chan struct{}) {
 	health := consulClient.Health()
 	catalog := consulClient.Catalog()
+	agent := consulClient.Agent()
 	queryOptions := consul.QueryOptions{}
+
+	agentInfo, err := agent.Self()
+	if err != nil {
+		log.Fatal(err)
+	}
+	datacenter := agentInfo["Config"]["Datacenter"].(string)
 
 	ticker := time.NewTicker(interval)
 	for {
@@ -137,6 +144,7 @@ func mainLoop(consulClient *consul.Client, datadogClient *datadog.Client, interv
 						Tags: []string{
 							"status:" + checkStatus,
 							"service:" + serviceName,
+							"datacenter:" + datacenter,
 							tag,
 						},
 					}
