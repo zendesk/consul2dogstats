@@ -122,13 +122,26 @@ func mainLoop(consulClient *consul.Client, datadogClient *datadog.Client, interv
 			// First level is tag, second level is status (passing, critical, etc.)
 			countByTagAndStatus := make(map[string]map[string]uint)
 			for _, entry := range serviceHealth {
+			NEXTTAG:
 				for _, tag := range entry.Service.Tags {
 					if countByTagAndStatus[tag] == nil {
 						countByTagAndStatus[tag] = make(map[string]uint)
 					}
 					for _, check := range entry.Checks {
-						countByTagAndStatus[tag][check.Status]++
+						// If any check returns critical, the status of the service is critical.
+						if check.Status == "critical" {
+							countByTagAndStatus[tag]["critical"]++
+							continue NEXTTAG
+						}
 					}
+					for _, check := range entry.Checks {
+						// If any check returns warning, the status of the service is warning.
+						if check.Status == "warning" {
+							countByTagAndStatus[tag]["warning"]++
+							continue NEXTTAG
+						}
+					}
+					countByTagAndStatus[tag]["passing"]++
 				}
 			}
 			for tag, countByStatus := range countByTagAndStatus {
