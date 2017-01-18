@@ -2,9 +2,11 @@ apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
   name: consul2dogstats
+  namespace: default
   labels:
     project: consul2dogstats
     role: app
+    kubernetes.io/cluster-service: "true"
 spec:
   replicas: 2
   selector:
@@ -16,10 +18,15 @@ spec:
       labels:
         project: consul2dogstats
         role: app
+        kubernetes.io/cluster-service: "true"
     spec:
       containers:
       - name: consul2dogstats
         image: docker-registry.zende.sk/consul2dogstats:latest
+        resources:
+          limits:
+            cpu: 100m
+            memory: 32Mi
         env:
         - name: CONSUL_HTTP_ADDR
           value: 169.254.1.1:8500
