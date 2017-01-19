@@ -1,5 +1,0 @@
-FROM busybox
-ADD bin/consul2dogstats /bin/
-ADD etc/ssl/ca-bundle.pem /etc/ssl/
-USER nobody
-ENTRYPOINT ["/bin/consul2dogstats"]

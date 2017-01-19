@@ -1,4 +1,4 @@
-.DEFAULT: push
+.DEFAULT: bin
 .PHONY: all clean image push bin
 
 DOCKER_IMAGE := docker-registry.zende.sk/consul2dogstats
@@ -10,8 +10,9 @@ VERSION_PKG=github.com/zendesk/consul2dogstats/version
 push: image
 	docker push $(DOCKER_IMAGE):$(DOCKER_TAG)
 
-image: bin
-	docker build -t $(DOCKER_IMAGE):$(DOCKER_TAG) -t $(DOCKER_IMAGE):git-$(GIT_REV) -f Dkrfile .
+image:
+	docker build --build-arg GIT_REV=$(GIT_REV) --build-arg GIT_DESCRIBE=$(GIT_DESCRIBE) \
+			-t $(DOCKER_IMAGE):$(DOCKER_TAG) -t $(DOCKER_IMAGE):git-$(GIT_REV) .
 
 bin: bin/consul2dogstats
 
