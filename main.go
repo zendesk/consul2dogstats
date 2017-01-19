@@ -120,15 +120,25 @@ func mainLoop(consulClient *consul.Client, datadogClient *datadog.Client, interv
 			if err != nil {
 				log.Fatal(err)
 			}
-			// Initialize the map that will be holding the service counts for us.
+			// Initialize the outer map that will be holding the service counts
+			// for us. The key of the outer map is the union of tags (in
+			// lexicographically sorted order, joined by the "|" character) for
+			// a given consul.ServiceEntry.  The value is a map of service
+			// statuses ("passing", "warning", "critical") to the count of each
+			// status.
 			countByTagsAndStatus := make(map[string]map[string]uint)
 		ENTRY:
 			for _, entry := range serviceHealth {
 				tags := entry.Service.Tags
 				sort.Strings(tags)
 				joinedTags := strings.Join(tags, "|")
+
+				// Initialize inner status map if necessary
 				if countByTagsAndStatus[joinedTags] == nil {
 					countByTagsAndStatus[joinedTags] = make(map[string]uint)
+					for _, status := range []string{"critical", "warning", "passing"} {
+						countByTagsAndStatus[joinedTags][status] = 0
+					}
 				}
 				for _, check := range entry.Checks {
 					// If any check returns critical, the status of the service is critical.
