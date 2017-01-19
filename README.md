@@ -25,10 +25,3 @@ The following environment variables can be used to configure `consul2dogstats`:
   Default: `consul2dogstats/.lock`
 * `C2D_COLLECT_INTERVAL`: Amount of time between each collection, expressed as
    a Go duration string.  Default: `10s`
-
-Notes
------
-
-* Q: Why isn't there a `Dockerfile` in here?
-* A: It's temporarily called `Dkrfile`, to prevent Samson from trying to
-  rebuild and republish the Docker image.
