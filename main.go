@@ -2,6 +2,8 @@ package main
 
 import (
 	"os"
+	"sort"
+	"strings"
 	"syscall"
 
 	"time"
@@ -119,33 +121,38 @@ func mainLoop(consulClient *consul.Client, datadogClient *datadog.Client, interv
 				log.Fatal(err)
 			}
 			// Initialize the map that will be holding the service counts for us.
-			// First level is tag, second level is status (passing, critical, etc.)
-			countByTagAndStatus := make(map[string]map[string]uint)
+			countByTagsAndStatus := make(map[string]map[string]uint)
+		ENTRY:
 			for _, entry := range serviceHealth {
-			NEXTTAG:
-				for _, tag := range entry.Service.Tags {
-					if countByTagAndStatus[tag] == nil {
-						countByTagAndStatus[tag] = make(map[string]uint)
-					}
-					for _, check := range entry.Checks {
-						// If any check returns critical, the status of the service is critical.
-						if check.Status == "critical" {
-							countByTagAndStatus[tag]["critical"]++
-							continue NEXTTAG
-						}
-					}
-					for _, check := range entry.Checks {
-						// If any check returns warning, the status of the service is warning.
-						if check.Status == "warning" {
-							countByTagAndStatus[tag]["warning"]++
-							continue NEXTTAG
-						}
-					}
-					countByTagAndStatus[tag]["passing"]++
+				tags := entry.Service.Tags
+				sort.Strings(tags)
+				joinedTags := strings.Join(tags, "|")
+				if countByTagsAndStatus[joinedTags] == nil {
+					countByTagsAndStatus[joinedTags] = make(map[string]uint)
 				}
+				for _, check := range entry.Checks {
+					// If any check returns critical, the status of the service is critical.
+					if check.Status == "critical" {
+						countByTagsAndStatus[joinedTags]["critical"]++
+						continue ENTRY
+					}
+				}
+				for _, check := range entry.Checks {
+					// If any check returns warning, the status of the service is warning.
+					if check.Status == "warning" {
+						countByTagsAndStatus[joinedTags]["warning"]++
+						continue ENTRY
+					}
+				}
+				countByTagsAndStatus[joinedTags]["passing"]++
 			}
-			for tag, countByStatus := range countByTagAndStatus {
+
+			for joinedTags, countByStatus := range countByTagsAndStatus {
 				for checkStatus, count := range countByStatus {
+					tags := append(strings.Split(joinedTags, "|"),
+						"status:"+checkStatus,
+						"service:"+serviceName,
+						"datacenter:"+datacenter)
 					metric := datadog.Metric{
 						Metric: "consul.service.count",
 						Points: []datadog.DataPoint{
@@ -154,12 +161,7 @@ func mainLoop(consulClient *consul.Client, datadogClient *datadog.Client, interv
 								float64(count),
 							},
 						},
-						Tags: []string{
-							"status:" + checkStatus,
-							"service:" + serviceName,
-							"datacenter:" + datacenter,
-							tag,
-						},
+						Tags: tags,
 					}
 					metrics = append(metrics, metric)
 				}
