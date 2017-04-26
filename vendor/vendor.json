@@ -1,0 +1,66 @@
+{
+	"comment": "",
+	"ignore": "test",
+	"package": [
+		{
+			"checksumSHA1": "ZKxETlJdB2XubMrZnXB0FQimVA8=",
+			"path": "github.com/Sirupsen/logrus",
+			"revision": "10f801ebc38b33738c9d17d50860f484a0988ff5",
+			"revisionTime": "2017-03-17T14:32:14Z"
+		},
+		{
+			"checksumSHA1": "SPQcWDUN+wcTThipcR9EzX4t3E8=",
+			"origin": "github.com/zorkian/go-datadog-api/vendor/github.com/cenkalti/backoff",
+			"path": "github.com/cenkalti/backoff",
+			"revision": "5b0c580fc37bc16fda43aff3f731ba466b5e8c66",
+			"revisionTime": "2017-04-07T05:11:28Z"
+		},
+		{
+			"checksumSHA1": "k8spDLTgdEFy15C1AdBJLAW+Zng=",
+			"path": "github.com/hashicorp/consul/api",
+			"revision": "2d7ec3137cd111b821c5dd72eab334a252857011",
+			"revisionTime": "2017-04-14T21:57:09Z"
+		},
+		{
+			"checksumSHA1": "b8F628srIitj5p7Y130xc9k0QWs=",
+			"origin": "github.com/hashicorp/consul/vendor/github.com/hashicorp/go-cleanhttp",
+			"path": "github.com/hashicorp/go-cleanhttp",
+			"revision": "2d7ec3137cd111b821c5dd72eab334a252857011",
+			"revisionTime": "2017-04-14T21:57:09Z"
+		},
+		{
+			"checksumSHA1": "A1PcINvF3UiwHRKn8UcgARgvGRs=",
+			"origin": "github.com/hashicorp/consul/vendor/github.com/hashicorp/go-rootcerts",
+			"path": "github.com/hashicorp/go-rootcerts",
+			"revision": "2d7ec3137cd111b821c5dd72eab334a252857011",
+			"revisionTime": "2017-04-14T21:57:09Z"
+		},
+		{
+			"checksumSHA1": "E3Xcanc9ouQwL+CZGOUyA/+giLg=",
+			"origin": "github.com/hashicorp/consul/vendor/github.com/hashicorp/serf/coordinate",
+			"path": "github.com/hashicorp/serf/coordinate",
+			"revision": "2d7ec3137cd111b821c5dd72eab334a252857011",
+			"revisionTime": "2017-04-14T21:57:09Z"
+		},
+		{
+			"checksumSHA1": "V/quM7+em2ByJbWBLOsEwnY3j/Q=",
+			"origin": "github.com/hashicorp/consul/vendor/github.com/mitchellh/go-homedir",
+			"path": "github.com/mitchellh/go-homedir",
+			"revision": "2d7ec3137cd111b821c5dd72eab334a252857011",
+			"revisionTime": "2017-04-14T21:57:09Z"
+		},
+		{
+			"checksumSHA1": "0xaJxfWe7dr+euwK16+PocnbNPA=",
+			"path": "github.com/zorkian/go-datadog-api",
+			"revision": "5b0c580fc37bc16fda43aff3f731ba466b5e8c66",
+			"revisionTime": "2017-04-07T05:11:28Z"
+		},
+		{
+			"checksumSHA1": "oomO3tMbCTnwZSWKg2VACMnn/IY=",
+			"path": "golang.org/x/sys/unix",
+			"revision": "493114f68206f85e7e333beccfabc11e98cba8dd",
+			"revisionTime": "2017-03-31T21:25:38Z"
+		}
+	],
+	"rootPath": "github.com/zendesk/consul2dogstats"
+}

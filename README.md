@@ -25,3 +25,17 @@ The following environment variables can be used to configure `consul2dogstats`:
   Default: `consul2dogstats/.lock`
 * `C2D_COLLECT_INTERVAL`: Amount of time between each collection, expressed as
    a Go duration string.  Default: `10s`
+* `CONSUL_HTTP_ADDR`: The address of the Consul agent (default: `127.0.0.1:8500`)
+* `CONSUL_HTTP_SSL`: If set, connect to the server using TLS (default: unset/no TLS)
+* `CONSUL_HTTP_TOKEN`: The API token used to authenticate to the Consul agent (optional, default: none)
+* `CONSUL_CACERT`: Path to CA file to use for talking to Consul over TLS (default: none)
+* `CONSUL_CAPATH`: Path to a directory of CA certs to use for talking to Consul over TLS (default: none)
+* `CONSUL_CLIENT_CERT`: Path to a client cert file to use for talking to Consul over TLS (default: none)
+* `CONSUL_CLIENT_KEY`: Path to a client key file to use for talking to Consul over TLS (default: none)
+* `CONSUL_TLS_SERVER_NAME`: Server name to use as the SNI host when connecting via TLS (default: none)
+* `CONSUL_HTTP_SSL_VERIFY`: If set to 0, disable TLS certificate verification (default: unset; perform verification)
+
+Development
+-----------
+
+Run `make test` to run all tests.
