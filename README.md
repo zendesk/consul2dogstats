@@ -1,7 +1,7 @@
 consul2dogstats
 ===============
 
-[![Build Status](https://travis-ci.org/zendesk/consul2dogstats.svg?branch=master)](https://travis-ci.org/zendesk/consul2dogstats) [![codecov](https://codecov.io/gh/zendesk/consul2dogstats/branch/master/graph/badge.svg)](https://codecov.io/gh/zendesk/consul2dogstats)
+[![Build Status](https://travis-ci.org/zendesk/consul2dogstats.svg?branch=master)](https://travis-ci.org/zendesk/consul2dogstats)
 
 consul2dogstats collects counts of Consul services by service name, status and
 tag, and publishes them to Datadog under the name `consul.service.count`.
